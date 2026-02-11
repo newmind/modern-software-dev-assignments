@@ -7,6 +7,7 @@ import json
 from typing import Any
 from ollama import chat
 from dotenv import load_dotenv
+from pydantic import BaseModel
 
 load_dotenv()
 
@@ -16,6 +17,12 @@ KEYWORD_PREFIXES = (
     "action:",
     "next:",
 )
+
+
+# Pydantic model for structured output from LLM
+class ActionItemList(BaseModel):
+    """Schema for action items extracted by LLM"""
+    action_items: List[str]
 
 
 def _is_action_line(line: str) -> bool:
@@ -87,3 +94,62 @@ def _looks_imperative(sentence: str) -> bool:
         "investigate",
     }
     return first.lower() in imperative_starters
+
+
+def extract_action_items_llm(text: str) -> List[str]:
+    """
+    Extract action items from text using Ollama LLM with structured outputs.
+    
+    Uses llama3.1:8b model to analyze the input text and extract action items
+    in a structured JSON format defined by the ActionItemList schema.
+    
+    Args:
+        text: Input text containing potential action items
+        
+    Returns:
+        List of extracted action items as strings
+    """
+    # Return empty list for empty input
+    if not text or not text.strip():
+        return []
+    
+    # Prepare the prompt for the LLM
+    prompt = f"""Extract all action items from the following text.
+Action items include:
+- Bullet points (starting with -, *, •, or numbers)
+- Checkbox items ([ ])
+- Lines starting with TODO:, ACTION:, NEXT:
+- Any task or to-do item mentioned in the text
+
+Extract each item as a separate string. Remove bullet markers, checkboxes, and prefixes.
+If the text contains bullet points or list items, extract them even if they don't look like traditional action items.
+
+Text:
+{text}
+
+Return all items as a JSON array."""
+    
+    try:
+        # Call Ollama with structured output format
+        response = chat(
+            model='llama3.1:8b',
+            messages=[
+                {
+                    'role': 'user',
+                    'content': prompt,
+                }
+            ],
+            format=ActionItemList.model_json_schema(),
+            options={'temperature': 0},  # Use temperature 0 for more deterministic output
+        )
+        
+        # Parse the response using Pydantic
+        action_items = ActionItemList.model_validate_json(response.message.content)
+        
+        # Return the list of action items
+        return action_items.action_items
+        
+    except Exception as e:
+        # Log error and return empty list on failure
+        print(f"Error extracting action items with LLM: {e}")
+        return []
