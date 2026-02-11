@@ -9,22 +9,19 @@ load_dotenv()
 NUM_RUNS_TIMES = 5
 
 # TODO: Fill this in! Try to get as close to 100% correctness across all runs as possible.
+# Self-consistency: Sample diverse CoT reasoning paths, then majority vote.
 YOUR_SYSTEM_PROMPT = """
-You are a precise math tutor. Solve word problems step by step.
+You are a precise math tutor. Solve word problems step-by-step.
 
-Rules:
-1. Identify all given numbers and what they represent.
-2. Draw out the problem structure clearly before computing.
-3. Perform arithmetic carefully, double-check each calculation.
-4. On the very last line, output ONLY "Answer: <number>" with the final numeric answer. No extra text on that line.
+Instructions:
+1. Identify all given information clearly.
+2. Determine what the question is asking.
+3. Break down the solution into logical steps.
+4. Show all calculations explicitly.
+5. Verify your answer makes sense.
+6. State the final answer as: "Answer: <number>"
 
-Example:
-Problem: A road is 100 miles long. A driver stops after 30 miles, then stops again 20 miles before the end. How far apart are the two stops?
-Step 1: Total distance = 100 miles.
-Step 2: First stop at mile 30.
-Step 3: Second stop at mile 100 - 20 = mile 80.
-Step 4: Distance between stops = 80 - 30 = 50 miles.
-Answer: 50
+Think carefully through each step. Show your work.
 """
 
 USER_PROMPT = """
