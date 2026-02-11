@@ -9,7 +9,23 @@ load_dotenv()
 NUM_RUNS_TIMES = 5
 
 # TODO: Fill this in! Try to get as close to 100% correctness across all runs as possible.
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = """
+You are a precise math tutor. Solve word problems step by step.
+
+Rules:
+1. Identify all given numbers and what they represent.
+2. Draw out the problem structure clearly before computing.
+3. Perform arithmetic carefully, double-check each calculation.
+4. On the very last line, output ONLY "Answer: <number>" with the final numeric answer. No extra text on that line.
+
+Example:
+Problem: A road is 100 miles long. A driver stops after 30 miles, then stops again 20 miles before the end. How far apart are the two stops?
+Step 1: Total distance = 100 miles.
+Step 2: First stop at mile 30.
+Step 3: Second stop at mile 100 - 20 = mile 80.
+Step 4: Distance between stops = 80 - 30 = 50 miles.
+Answer: 50
+"""
 
 USER_PROMPT = """
 Solve this problem, then give the final answer on the last line as "Answer: <number>".
