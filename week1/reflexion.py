@@ -15,7 +15,15 @@ Keep the implementation minimal.
 """
 
 # TODO: Fill this in!
-YOUR_REFLEXION_PROMPT = ""
+YOUR_REFLEXION_PROMPT = """
+You are a coding assistant that fixes code based on test failures.
+You will receive a previous implementation and a list of test failures.
+Carefully analyze each failure message to understand what checks are missing.
+Output ONLY a single fenced Python code block that defines the corrected 
+function is_valid_password(password: str) -> bool.
+Make sure to check for ALL requirements mentioned in the failures.
+No prose, no explanations - just the code block.
+"""
 
 
 # Ground-truth test suite used to evaluate generated code
@@ -96,7 +104,16 @@ def your_build_reflexion_context(prev_code: str, failures: List[str]) -> str:
 
     Return a string that will be sent as the user content alongside the reflexion system prompt.
     """
-    return ""
+    failures_text = "\n".join(f"- {f}" for f in failures)
+    return f"""Previous implementation:
+```python
+{prev_code}
+```
+
+Test failures:
+{failures_text}
+
+Please fix the implementation to pass all tests. Pay attention to ALL the failing checks mentioned above."""
 
 
 def apply_reflexion(
