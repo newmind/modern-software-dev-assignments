@@ -17,7 +17,7 @@ from ..schemas import (
     MarkDoneRequest,
     MarkDoneResponse,
 )
-from ..services.extract import extract_action_items
+from ..services.extract import extract_action_items, extract_action_items_llm
 
 
 router = APIRouter(prefix="/action-items", tags=["action-items"])
@@ -36,6 +36,28 @@ def extract(request: ExtractRequest) -> ExtractResponse:
         note_id = db.insert_note(request.text)
 
     items = extract_action_items(request.text)
+    ids = db.insert_action_items(items, note_id=note_id)
+    
+    return ExtractResponse(
+        note_id=note_id,
+        items=[{"id": i, "text": t} for i, t in zip(ids, items)]
+    )
+
+
+@router.post("/extract-llm", response_model=ExtractResponse)
+def extract_llm(request: ExtractRequest) -> ExtractResponse:
+    """
+    Extract action items from text using LLM-powered extraction.
+    
+    Uses Ollama with llama3.1:8b model for intelligent extraction.
+    Optionally saves the input text as a note if save_note is True.
+    Returns the extracted action items with their IDs.
+    """
+    note_id: Optional[int] = None
+    if request.save_note:
+        note_id = db.insert_note(request.text)
+
+    items = extract_action_items_llm(request.text)
     ids = db.insert_action_items(items, note_id=note_id)
     
     return ExtractResponse(
