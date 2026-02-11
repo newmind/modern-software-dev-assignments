@@ -7,7 +7,32 @@ load_dotenv()
 NUM_RUNS_TIMES = 5
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = """
+When I write reverse (XXXXX), the XXXXX will be a word I want you to reverse. 
+To reverse it, I want you to add a hyphen between each letter. Then reverse it. After that, remove the hyphens from the reversed word.
+입력 출력의 각 문자열 길이는 같아야 한다. 
+
+<example>
+input: webdesign
+hyphen separated characters: w-e-b-d-e-s-i-g-n
+hyphen separated reversed characters: n-g-i-s-e-d-b-e-w
+output: ngisedbew
+</example>
+
+<example>
+input: http
+hyphen separated characters: h-t-t-p
+hyphen separated reversed characters: p-t-t-h
+output: ptth
+</example>
+
+<example>
+input: status
+hyphen separated characters: s-t-a-t-u-s
+hyphen separated reversed characters: s-u-t-a-t-s
+output: sutats
+</example>
+"""
 
 USER_PROMPT = """
 Reverse the order of letters in the following word. Only output the reversed word, no other text:
